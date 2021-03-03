@@ -39,11 +39,14 @@ implementations.
 #![deny(missing_docs)]
 
 extern crate memchr;
+extern crate md5;
 
 use std::fmt;
 use std::io;
 use std::ops;
 use std::u64;
+use std::str;
+use std::ascii::escape_default;
 
 use interpolate::interpolate;
 
@@ -285,6 +288,16 @@ impl Default for LineTerminator {
     }
 }
 
+/// Converts bytes to a nice string.
+pub fn convert_bytes(bs: &[u8]) -> String {
+    let mut nice = String::new();
+    for &b in bs {
+        let part: Vec<u8> = escape_default(b).collect();
+        nice.push_str(str::from_utf8(&part).unwrap());
+    }
+    nice
+}
+
 /// A set of bytes.
 ///
 /// In this crate, byte sets are used to express bytes that can never appear
@@ -451,7 +464,14 @@ pub trait Captures {
             },
             name_to_index,
             dst,
-        )
+        );
+        // Set unique hash for each segment
+        if let Some(range) = self.get(0){
+            let segment = &convert_bytes(haystack)[range.start()..range.end()];
+            let mut adding = String::from(
+                &(format!("-{:?}", md5::compute(segment.as_bytes())))[0..6]).into_bytes();
+            dst.append(&mut adding);
+        }
     }
 }
 

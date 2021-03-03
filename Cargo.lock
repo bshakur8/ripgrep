@@ -200,6 +200,7 @@ dependencies = [
 name = "grep-matcher"
 version = "0.1.4"
 dependencies = [
+ "md5",
  "memchr",
  "regex",
 ]
@@ -343,6 +344,12 @@ checksum = "fcf3805d4480bb5b86070dcfeb9e2cb2ebc148adb753c5cca5f884d1d65a42b2"
 dependencies = [
  "cfg-if 0.1.10",
 ]
+
+[[package]]
+name = "md5"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "490cc448043f947bae3cbee9c203358d62dbee0db12107a74be5c30ccfd09771"
 
 [[package]]
 name = "memchr"
