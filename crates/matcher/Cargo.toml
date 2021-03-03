@@ -15,7 +15,8 @@ autotests = false
 
 [dependencies]
 memchr = "2.1"
-md5 = "0.7"
+seahash = "4.1"
+cached = "0.23"
 
 [dev-dependencies]
 regex = "1.1"

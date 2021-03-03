@@ -39,15 +39,15 @@ implementations.
 #![deny(missing_docs)]
 
 extern crate memchr;
-extern crate md5;
+extern crate seahash;
+extern crate cached;
 
 use std::fmt;
 use std::io;
 use std::ops;
 use std::u64;
 use std::str;
-use std::ascii::escape_default;
-
+use cached::proc_macro::cached;
 use interpolate::interpolate;
 
 mod interpolate;
@@ -288,14 +288,11 @@ impl Default for LineTerminator {
     }
 }
 
-/// Converts bytes to a nice string.
-pub fn convert_bytes(bs: &[u8]) -> String {
-    let mut nice = String::new();
-    for &b in bs {
-        let part: Vec<u8> = escape_default(b).collect();
-        nice.push_str(str::from_utf8(&part).unwrap());
-    }
-    nice
+/// Hash string. Uses cache
+#[cached(size=1_000_000)]
+fn hash_segment(segment: String) -> String {
+    let hash = &(format!("-{:?}", seahash::hash(segment.as_bytes())))[0..7];
+    String::from(hash)
 }
 
 /// A set of bytes.
@@ -467,9 +464,10 @@ pub trait Captures {
         );
         // Set unique hash for each segment
         if let Some(range) = self.get(0){
-            let segment = &convert_bytes(haystack)[range.start()..range.end()];
-            let mut adding = String::from(
-                &(format!("-{:?}", md5::compute(segment.as_bytes())))[0..6]).into_bytes();
+            let slice = &haystack[range.start()..range.end()];
+            let segment = String::from_utf8(slice.to_vec()).unwrap();
+            let hashing = &hash_segment((&segment).to_string());
+            let mut adding = format!("{}}}}}", hashing).into_bytes();
             dst.append(&mut adding);
         }
     }
