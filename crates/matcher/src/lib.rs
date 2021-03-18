@@ -39,7 +39,7 @@ implementations.
 #![deny(missing_docs)]
 
 extern crate memchr;
-extern crate seahash;
+extern crate uuid;
 extern crate cached;
 
 use std::fmt;
@@ -47,6 +47,7 @@ use std::io;
 use std::ops;
 use std::u64;
 use std::str;
+use uuid::Uuid;
 use cached::proc_macro::cached;
 use interpolate::interpolate;
 
@@ -291,7 +292,7 @@ impl Default for LineTerminator {
 /// Hash string. Uses cache
 #[cached(size=1_000_000)]
 fn hash_segment(segment: String) -> String {
-    let hash = &(format!("-{:?}", seahash::hash(segment.as_bytes())))[0..7];
+    let hash = &(format!("-{:?}", Uuid::new_v5(&Uuid::NAMESPACE_OID, segment.as_bytes())))[..9];
     String::from(hash)
 }
 

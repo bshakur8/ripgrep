@@ -15,7 +15,7 @@ autotests = false
 
 [dependencies]
 memchr = "2.1"
-seahash = "4.1"
+uuid = { version = "0.8.1", features = ["v5"] }
 cached = "0.23"
 
 [dev-dependencies]
